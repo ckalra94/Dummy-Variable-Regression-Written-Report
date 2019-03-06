@@ -1,0 +1,93 @@
+---
+title: "Econ610Hw6"
+author: "Chris Kalra"
+date: "10/10/2018"
+output: html_document
+---
+
+
+#Exercise 1
+```{r}
+#a)
+#wage2=data
+full=lm(lwage~educ+exper+tenure+married+black+south+urban, data=wage2)
+summary(full)
+#b)
+full2=lm(lwage~educ+exper+tenure+married+black+south+urban+I(exper^2)+I(tenure^2), data=wage2)
+summary(full2)
+anova(full, full2)
+#c)
+full3=lm(lwage~educ+exper+tenure+married+black+south+urban+(educ*black), data=wage2)
+summary(full3)
+#d)
+wage2$black
+wage2$marrnonblack = (wage2$married)*(1-(wage2$black))
+wage2$marrnonblack
+
+wage2$marrblack=(wage2$married)*(wage2$black)
+wage2$marrblack
+
+wage2$singleblack=(1-(wage2$married))*(wage2$black)
+wage2$singleblack
+
+full4=lm(lwage~educ+exper+tenure+south+urban+marrblack+marrnonblack+singleblack, data=wage2)
+summary(full4)
+```
+
+#Exercise 2
+```{r}
+#a)
+#sleep75=data
+ex2male=lm(sleep~totwrk + educ + age + I(age^2) + yngkid, data=subset(sleep75, sleep75$male==1))
+summary(ex2male)
+ex2female=lm(sleep~totwrk + educ + age + I(age^2) + yngkid, data=subset(sleep75, sleep75$male==0))
+summary(ex2female)
+
+#b)
+ex2bmale=lm(sleep~ male + totwrk + educ + age + I(age^2) + yngkid + male*totwrk + male*educ + male*age + male*I(age^2) + male*yngkid, data=subset(sleep75, sleep75$male==1))
+male=sum(resid(ex2bmale)^2)
+
+ex2bfemale=lm(sleep~ male + totwrk + educ + age + I(age^2) + yngkid + male*totwrk + male*educ + male*age + male*I(age^2) + male*yngkid, data=subset(sleep75, sleep75$male==0))
+female=sum(resid(ex2bfemale)^2)
+
+pooled=lm(sleep~ male + totwrk + educ + age + I(age^2) + yngkid + male*totwrk + male*educ + male*age + male*I(age^2) + male*yngkid, data=sleep75)
+pooledss=sum(resid(pooled)^2)
+
+pooled2=lm(sleep~ totwrk + educ + age + I(age^2) + yngkid, data=sleep75)
+pooledss2=sum(resid(pooled2)^2)
+
+chow=(pooledss-(male+female)/6)/((male+female)/(706-(2*6)))
+chow
+male;female;pooledss
+
+chow2=((pooledss2 - pooledss)/6)/(pooledss/(706-12))
+chow2
+
+anova(pooled, pooled2)
+
+#c)
+pooled3=lm(sleep~ male + totwrk + educ + age + I(age^2) + yngkid + male*totwrk + male*educ + male*age + male*I(age^2) + male*yngkid, data=sleep75)
+pooledss3=sum(resid(pooled3)^2)
+
+pooled4=lm(sleep~ male + totwrk + educ + age + I(age^2) + yngkid, data=sleep75)
+pooledss4=sum(resid(pooled4)^2)
+
+anova(pooled3, pooled4)
+
+chow3=((pooledss4-pooledss3)/5)/(pooledss3/(694))
+chow3
+
+```
+
+#Exercise 3
+```{r}
+#a)
+#wage1=data
+ex3=lm(lwage ~ female + educ + female*educ + exper + I(exper^2) + tenure + I(-1*tenure^2), data=wage1)
+summary(ex3)
+#b)
+wage1$educMinus=wage1$educ - 12.5
+ex3b=lm(lwage ~ female + educ + female*educMinus + exper + I(exper^2) + tenure + I(-1*tenure^2), data=wage1)
+summary(ex3b)
+```
+
